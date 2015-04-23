@@ -5,17 +5,18 @@
 Summary:	Mir display server and libraries
 Summary(pl.UTF-8):	Serwer wyświetlania Mir oraz biblioteki
 Name:		mir
-Version:	0.11.0
+Version:	0.12.1
 Release:	0.1
 License:	LGPL v3 (libraries), GPL v3 (server and examples)
 Group:		Libraries
 #Source0Download: https://launchpad.net/mir/+download
-Source0:	https://launchpad.net/mir/0.11/%{version}/+download/%{name}-%{version}.tar.bz2
-# Source0-md5:	7c689c1e1682d2424567e77161cff471
+Source0:	https://launchpad.net/mir/0.12/%{version}/+download/%{name}-%{version}.tar.bz2
+# Source0-md5:	72d1f6013ecf1981c7eb023a5facbf44
 Patch0:		%{name}-werror.patch
 Patch1:		%{name}-gflags.patch
 Patch2:		%{name}-tests.patch
 Patch3:		%{name}-dirs.patch
+Patch4:		%{name}-libdrm.patch
 URL:		https://launchpad.net/mir
 BuildRequires:	EGL-devel
 BuildRequires:	GLM
@@ -91,6 +92,7 @@ Dokumentacja API Mira.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %{__sed} -i -e 's/-Werror //' CMakeLists.txt
 
@@ -132,14 +134,14 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libmircommon.so.3
 %attr(755,root,root) %{_libdir}/libmirplatform.so.6
 %attr(755,root,root) %{_libdir}/libmirprotobuf.so.0
-%attr(755,root,root) %{_libdir}/libmirserver.so.29
+%attr(755,root,root) %{_libdir}/libmirserver.so.30
 %dir %{_libdir}/mir
 %dir %{_libdir}/mir/client-platform
 %attr(755,root,root) %{_libdir}/mir/client-platform/dummy.so
-%attr(755,root,root) %{_libdir}/mir/client-platform/mesa.so
+%attr(755,root,root) %{_libdir}/mir/client-platform/mesa.so.2
 %dir %{_libdir}/mir/server-platform
 %attr(755,root,root) %{_libdir}/mir/server-platform/graphics-dummy.so
-%attr(755,root,root) %{_libdir}/mir/server-platform/graphics-mesa.so
+%attr(755,root,root) %{_libdir}/mir/server-platform/graphics-mesa.so.1
 %dir %{_libdir}/mir/tools
 %attr(755,root,root) %{_libdir}/mir/tools/libmirclientlttng.so
 %attr(755,root,root) %{_libdir}/mir/tools/libmirserverlttng.so
