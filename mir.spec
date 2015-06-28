@@ -5,13 +5,13 @@
 Summary:	Mir display server and libraries
 Summary(pl.UTF-8):	Serwer wyświetlania Mir oraz biblioteki
 Name:		mir
-Version:	0.12.1
+Version:	0.13.3
 Release:	0.1
 License:	LGPL v3 (libraries), GPL v3 (server and examples)
 Group:		Libraries
 #Source0Download: https://launchpad.net/mir/+download
-Source0:	https://launchpad.net/mir/0.12/%{version}/+download/%{name}-%{version}.tar.bz2
-# Source0-md5:	72d1f6013ecf1981c7eb023a5facbf44
+Source0:	https://launchpad.net/mir/0.13/%{version}/+download/%{name}-%{version}.tar.xz
+# Source0-md5:	2b3c11ccfe3bdb454fa8496c6425b8e5
 Patch0:		%{name}-werror.patch
 Patch1:		%{name}-gflags.patch
 Patch2:		%{name}-tests.patch
@@ -31,15 +31,18 @@ BuildRequires:	glog-devel
 BuildRequires:	gmock-devel >= 1.7.0-2
 BuildRequires:	gtest-devel >= 1.7.0-2
 BuildRequires:	libdrm-devel
-BuildRequires:	libstdc++-devel
+# -std=c++14
+BuildRequires:	libstdc++-devel >= 6:4.9
 BuildRequires:	lttng-ust-devel
 BuildRequires:	pkgconfig
 BuildRequires:	protobuf-devel
 BuildRequires:	python >= 2
 BuildRequires:	sed >= 4.0
+BuildRequires:	tar >= 1:1.22
 BuildRequires:	udev-devel
 BuildRequires:	umockdev-devel >= 0.6
 BuildRequires:	xorg-lib-libxkbcommon-devel
+BuildRequires:	xz
 # TODO? astyle pdebuild android-ndk android-sdk vera++
 Requires:	Mesa-libgbm >= 9.0.0
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -131,17 +134,18 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/mirscreencast
 %attr(755,root,root) %{_libdir}/libmirclient.so.8
 %attr(755,root,root) %{_libdir}/libmirclient-debug-extension.so.1
-%attr(755,root,root) %{_libdir}/libmircommon.so.3
-%attr(755,root,root) %{_libdir}/libmirplatform.so.6
+%attr(755,root,root) %{_libdir}/libmircommon.so.4
+%attr(755,root,root) %{_libdir}/libmirplatform.so.7
 %attr(755,root,root) %{_libdir}/libmirprotobuf.so.0
-%attr(755,root,root) %{_libdir}/libmirserver.so.30
+%attr(755,root,root) %{_libdir}/libmirserver.so.31
 %dir %{_libdir}/mir
 %dir %{_libdir}/mir/client-platform
 %attr(755,root,root) %{_libdir}/mir/client-platform/dummy.so
 %attr(755,root,root) %{_libdir}/mir/client-platform/mesa.so.2
 %dir %{_libdir}/mir/server-platform
 %attr(755,root,root) %{_libdir}/mir/server-platform/graphics-dummy.so
-%attr(755,root,root) %{_libdir}/mir/server-platform/graphics-mesa.so.1
+%attr(755,root,root) %{_libdir}/mir/server-platform/graphics-mesa.so.2
+%attr(755,root,root) %{_libdir}/mir/server-platform/input-stub.so
 %dir %{_libdir}/mir/tools
 %attr(755,root,root) %{_libdir}/mir/tools/libmirclientlttng.so
 %attr(755,root,root) %{_libdir}/mir/tools/libmirserverlttng.so
