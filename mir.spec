@@ -5,13 +5,13 @@
 Summary:	Mir display server and libraries
 Summary(pl.UTF-8):	Serwer wyświetlania Mir oraz biblioteki
 Name:		mir
-Version:	0.13.3
+Version:	0.16.0
 Release:	0.1
 License:	LGPL v3 (libraries), GPL v3 (server and examples)
 Group:		Libraries
 #Source0Download: https://launchpad.net/mir/+download
-Source0:	https://launchpad.net/mir/0.13/%{version}/+download/%{name}-%{version}.tar.xz
-# Source0-md5:	2b3c11ccfe3bdb454fa8496c6425b8e5
+Source0:	https://launchpad.net/mir/0.16/%{version}/+download/%{name}-%{version}.tar.xz
+# Source0-md5:	b90f06d1a5058fb122d2e75432daee5b
 Patch0:		%{name}-werror.patch
 Patch1:		%{name}-gflags.patch
 Patch2:		%{name}-tests.patch
@@ -33,9 +33,10 @@ BuildRequires:	gtest-devel >= 1.7.0-2
 BuildRequires:	libdrm-devel
 # -std=c++14
 BuildRequires:	libstdc++-devel >= 6:4.9
+BuildRequires:	libuuid-devel
 BuildRequires:	lttng-ust-devel
 BuildRequires:	pkgconfig
-BuildRequires:	protobuf-devel
+BuildRequires:	protobuf-devel >= 2.4.1
 BuildRequires:	python >= 2
 BuildRequires:	sed >= 4.0
 BuildRequires:	tar >= 1:1.22
@@ -70,13 +71,25 @@ Summary:	Header files for Mir libraries
 Summary(pl.UTF-8):	Pliki nagłówkowe bibliotek Mir
 Group:		Development/Libraries
 Requires:	%{name} = %{version}-%{release}
-Requires:	protobuf-devel
+Requires:	protobuf-devel >= 2.4.1
 
 %description devel
 Header files for Mir libraries.
 
 %description devel -l pl.UTF-8
 Pliki nagłówkowe bibliotek Mir.
+
+%package test-devel
+Summary:	Development package for Mir tests
+Summary(pl.UTF-8):	Pakiet programistyczny dla testów Mira
+Group:		Development/Libraries
+Requires:	%{name}-devel = %{version}-%{release}
+
+%description test-devel
+Development package for Mir tests.
+
+%description test-devel -l pl.UTF-8
+Pakiet programistyczny dla testów Mira.
 
 %package apidocs
 Summary:	Mir API documentation
@@ -104,19 +117,20 @@ install -d build
 cd build
 %cmake .. \
 	-DBUILD_DOXYGEN=ON \
-	-DMIR_PLATFORM="mesa%{?with_android:;android}" \
+	-DMIR_PLATFORM="mesa-kms;mesa-x11;%{?with_android:;android}" \
 	-DMIR_USE_PRECOMPILED_HEADERS=OFF
 %{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
-%{__make} -C build install \
+%{__make} -C build -j1 install \
 	DESTDIR=$RPM_BUILD_ROOT
 
 # tests
-%{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_{acceptance,integration,performance,unit}_tests
+%{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_{acceptance,integration,performance,privileged,unit}_tests
 %{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_stress
+%{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_test_reload_protobuf
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -129,23 +143,26 @@ rm -rf $RPM_BUILD_ROOT
 %doc README.md
 %attr(755,root,root) %{_bindir}/mir_demo_*
 %attr(755,root,root) %{_bindir}/mir_proving_server
+%attr(755,root,root) %{_bindir}/mirbacklight
 %attr(755,root,root) %{_bindir}/mirout
 %attr(755,root,root) %{_bindir}/mirping
 %attr(755,root,root) %{_bindir}/mirscreencast
-%attr(755,root,root) %{_libdir}/libmirclient.so.8
+%attr(755,root,root) %{_libdir}/libmirclient.so.9
 %attr(755,root,root) %{_libdir}/libmirclient-debug-extension.so.1
-%attr(755,root,root) %{_libdir}/libmircommon.so.4
-%attr(755,root,root) %{_libdir}/libmirplatform.so.7
-%attr(755,root,root) %{_libdir}/libmirprotobuf.so.0
-%attr(755,root,root) %{_libdir}/libmirserver.so.31
+%attr(755,root,root) %{_libdir}/libmircommon.so.5
+%attr(755,root,root) %{_libdir}/libmirplatform.so.10
+%attr(755,root,root) %{_libdir}/libmirprotobuf.so.2
+%attr(755,root,root) %{_libdir}/libmirserver.so.34
+%attr(755,root,root) %{_libdir}/libmir_demo_server_loadable.so
 %dir %{_libdir}/mir
 %dir %{_libdir}/mir/client-platform
 %attr(755,root,root) %{_libdir}/mir/client-platform/dummy.so
-%attr(755,root,root) %{_libdir}/mir/client-platform/mesa.so.2
+%attr(755,root,root) %{_libdir}/mir/client-platform/mesa.so.3
 %dir %{_libdir}/mir/server-platform
 %attr(755,root,root) %{_libdir}/mir/server-platform/graphics-dummy.so
-%attr(755,root,root) %{_libdir}/mir/server-platform/graphics-mesa.so.2
+%attr(755,root,root) %{_libdir}/mir/server-platform/graphics-mesa-kms.so.5
 %attr(755,root,root) %{_libdir}/mir/server-platform/input-stub.so
+%attr(755,root,root) %{_libdir}/mir/server-platform/server-mesa-x11.so.5
 %dir %{_libdir}/mir/tools
 %attr(755,root,root) %{_libdir}/mir/tools/libmirclientlttng.so
 %attr(755,root,root) %{_libdir}/mir/tools/libmirserverlttng.so
@@ -161,12 +178,21 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/mirclient
 %{_includedir}/mircommon
 %{_includedir}/mirplatform
+%{_includedir}/mirrenderer
 %{_includedir}/mirserver
 %{_pkgconfigdir}/mir-client-platform-mesa-dev.pc
+%{_pkgconfigdir}/mir-renderer-gl-dev.pc
 %{_pkgconfigdir}/mirclient.pc
 %{_pkgconfigdir}/mirclient-debug-extension.pc
 %{_pkgconfigdir}/mirplatform.pc
 %{_pkgconfigdir}/mirserver.pc
+
+%files test-devel
+%defattr(644,root,root,755)
+%{_libdir}/libmir-test-assist.a
+%{_includedir}/mirtest
+%{_pkgconfigdir}/mirtest.pc
+%{_datadir}/mir-perf-framework
 
 %files apidocs
 %defattr(644,root,root,755)
