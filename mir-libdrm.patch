@@ -9,3 +9,14 @@
  
  #include <boost/exception/errinfo_errno.hpp>
  
+--- mir-0.21.0/tests/unit-tests/graphics/mesa/kms/test_cursor.cpp.orig	2016-04-08 16:03:06.000000000 +0200
++++ mir-0.21.0/tests/unit-tests/graphics/mesa/kms/test_cursor.cpp	2016-04-14 05:45:03.201626883 +0200
+@@ -24,7 +24,7 @@
+ #include "mir/graphics/cursor_image.h"
+ 
+ #include <xf86drm.h>
+-#include <drm/drm.h>
++#include <libdrm/drm.h>
+ 
+ #include "mir/test/doubles/mock_gbm.h"
+ #include "mir/test/doubles/mock_drm.h"

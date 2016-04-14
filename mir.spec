@@ -5,18 +5,18 @@
 Summary:	Mir display server and libraries
 Summary(pl.UTF-8):	Serwer wyświetlania Mir oraz biblioteki
 Name:		mir
-Version:	0.16.0
+Version:	0.21.0
 Release:	0.1
 License:	LGPL v3 (libraries), GPL v3 (server and examples)
 Group:		Libraries
 #Source0Download: https://launchpad.net/mir/+download
-Source0:	https://launchpad.net/mir/0.16/%{version}/+download/%{name}-%{version}.tar.xz
-# Source0-md5:	b90f06d1a5058fb122d2e75432daee5b
+Source0:	https://launchpad.net/mir/0.21/%{version}/+download/%{name}-%{version}.tar.xz
+# Source0-md5:	65e3e05420d59505f486b545b7c77ffc
 Patch0:		%{name}-werror.patch
 Patch1:		%{name}-gflags.patch
-Patch2:		%{name}-tests.patch
-Patch3:		%{name}-dirs.patch
-Patch4:		%{name}-libdrm.patch
+Patch2:		%{name}-dirs.patch
+Patch3:		%{name}-libdrm.patch
+Patch4:		%{name}-libinput.patch
 URL:		https://launchpad.net/mir
 BuildRequires:	EGL-devel
 BuildRequires:	GLM
@@ -31,6 +31,8 @@ BuildRequires:	glog-devel
 BuildRequires:	gmock-devel >= 1.7.0-2
 BuildRequires:	gtest-devel >= 1.7.0-2
 BuildRequires:	libdrm-devel
+# >1.2.x without libinput patch?
+BuildRequires:	libinput-devel >= 1.2
 # -std=c++14
 BuildRequires:	libstdc++-devel >= 6:4.9
 BuildRequires:	libuuid-devel
@@ -128,9 +130,11 @@ rm -rf $RPM_BUILD_ROOT
 	DESTDIR=$RPM_BUILD_ROOT
 
 # tests
-%{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_{acceptance,integration,performance,privileged,unit}_tests
+%{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_{acceptance,integration,performance,privileged,unit,umock_acceptance,umock_unit}_tests
+%{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_{integration,unit}_tests_mesa*
 %{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_stress
 %{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_test_reload_protobuf
+%{__rm} -r $RPM_BUILD_ROOT%{_datadir}/mir-test-data
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -144,25 +148,29 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/mir_demo_*
 %attr(755,root,root) %{_bindir}/mir_proving_server
 %attr(755,root,root) %{_bindir}/mirbacklight
+%attr(755,root,root) %{_bindir}/mirin
 %attr(755,root,root) %{_bindir}/mirout
 %attr(755,root,root) %{_bindir}/mirping
-%attr(755,root,root) %{_bindir}/mirscreencast
+%attr(756,root,root) %{_bindir}/mirscreencast
 %attr(755,root,root) %{_libdir}/libmirclient.so.9
 %attr(755,root,root) %{_libdir}/libmirclient-debug-extension.so.1
 %attr(755,root,root) %{_libdir}/libmircommon.so.5
-%attr(755,root,root) %{_libdir}/libmirplatform.so.10
-%attr(755,root,root) %{_libdir}/libmirprotobuf.so.2
-%attr(755,root,root) %{_libdir}/libmirserver.so.34
+%attr(755,root,root) %{_libdir}/libmircookie.so.2
+%attr(755,root,root) %{_libdir}/libmirplatform.so.11
+%attr(755,root,root) %{_libdir}/libmirprotobuf.so.3
+%attr(755,root,root) %{_libdir}/libmirserver.so.38
 %attr(755,root,root) %{_libdir}/libmir_demo_server_loadable.so
 %dir %{_libdir}/mir
 %dir %{_libdir}/mir/client-platform
 %attr(755,root,root) %{_libdir}/mir/client-platform/dummy.so
-%attr(755,root,root) %{_libdir}/mir/client-platform/mesa.so.3
+%attr(755,root,root) %{_libdir}/mir/client-platform/mesa.so.5
 %dir %{_libdir}/mir/server-platform
 %attr(755,root,root) %{_libdir}/mir/server-platform/graphics-dummy.so
-%attr(755,root,root) %{_libdir}/mir/server-platform/graphics-mesa-kms.so.5
+%attr(755,root,root) %{_libdir}/mir/server-platform/graphics-mesa-kms.so.8
+%attr(755,root,root) %{_libdir}/mir/server-platform/graphics-throw.so
+%attr(755,root,root) %{_libdir}/mir/server-platform/input-evdev.so.5
 %attr(755,root,root) %{_libdir}/mir/server-platform/input-stub.so
-%attr(755,root,root) %{_libdir}/mir/server-platform/server-mesa-x11.so.5
+%attr(755,root,root) %{_libdir}/mir/server-platform/server-mesa-x11.so.8
 %dir %{_libdir}/mir/tools
 %attr(755,root,root) %{_libdir}/mir/tools/libmirclientlttng.so
 %attr(755,root,root) %{_libdir}/mir/tools/libmirserverlttng.so
@@ -172,18 +180,21 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libmirclient.so
 %attr(755,root,root) %{_libdir}/libmirclient-debug-extension.so
 %attr(755,root,root) %{_libdir}/libmircommon.so
+%attr(755,root,root) %{_libdir}/libmircookie.so
 %attr(755,root,root) %{_libdir}/libmirplatform.so
 %attr(755,root,root) %{_libdir}/libmirprotobuf.so
 %attr(755,root,root) %{_libdir}/libmirserver.so
 %{_includedir}/mirclient
 %{_includedir}/mircommon
+%{_includedir}/mircookie
 %{_includedir}/mirplatform
 %{_includedir}/mirrenderer
 %{_includedir}/mirserver
-%{_pkgconfigdir}/mir-client-platform-mesa-dev.pc
+%{_pkgconfigdir}/mir-client-platform-mesa.pc
 %{_pkgconfigdir}/mir-renderer-gl-dev.pc
 %{_pkgconfigdir}/mirclient.pc
 %{_pkgconfigdir}/mirclient-debug-extension.pc
+%{_pkgconfigdir}/mircookie.pc
 %{_pkgconfigdir}/mirplatform.pc
 %{_pkgconfigdir}/mirserver.pc
 
