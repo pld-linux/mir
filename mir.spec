@@ -5,14 +5,14 @@
 Summary:	Mir display server and libraries
 Summary(pl.UTF-8):	Serwer wyświetlania Mir oraz biblioteki
 Name:		mir
-Version:	0.21.0
+Version:	0.26.2
 Release:	0.1
 License:	LGPL v3 (libraries), GPL v3 (server and examples)
 Group:		Libraries
 #Source0Download: https://launchpad.net/mir/+download
-Source0:	https://launchpad.net/mir/0.21/%{version}/+download/%{name}-%{version}.tar.xz
-# Source0-md5:	65e3e05420d59505f486b545b7c77ffc
-Patch0:		%{name}-werror.patch
+Source0:	https://launchpad.net/mir/0.26/%{version}/+download/%{name}-%{version}.tar.xz
+# Source0-md5:	3c85ee4798ba6929f568c758fad18192
+Patch0:		%{name}-protobuf.patch
 Patch1:		%{name}-gflags.patch
 Patch2:		%{name}-dirs.patch
 Patch3:		%{name}-libdrm.patch
@@ -23,6 +23,7 @@ BuildRequires:	GLM
 BuildRequires:	Mesa-libgbm-devel >= 9.0.0
 BuildRequires:	OpenGLESv2-devel
 BuildRequires:	boost-devel >= 1.48.0
+BuildRequires:	capnproto-c++-devel
 BuildRequires:	cmake >= 2.8
 BuildRequires:	doxygen >= 1.8.0
 BuildRequires:	gflags-devel
@@ -31,7 +32,7 @@ BuildRequires:	glog-devel
 BuildRequires:	gmock-devel >= 1.7.0-2
 BuildRequires:	gtest-devel >= 1.7.0-2
 BuildRequires:	libdrm-devel
-# >1.2.x without libinput patch?
+BuildRequires:	libepoxy-devel
 BuildRequires:	libinput-devel >= 1.2
 # -std=c++14
 BuildRequires:	libstdc++-devel >= 6:4.9
@@ -119,7 +120,7 @@ install -d build
 cd build
 %cmake .. \
 	-DBUILD_DOXYGEN=ON \
-	-DMIR_PLATFORM="mesa-kms;mesa-x11;%{?with_android:;android}" \
+	-DMIR_PLATFORM="mesa-kms;mesa-x11;eglstream-kms%{?with_android:;android}" \
 	-DMIR_USE_PRECOMPILED_HEADERS=OFF
 %{__make}
 
@@ -131,9 +132,11 @@ rm -rf $RPM_BUILD_ROOT
 
 # tests
 %{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_{acceptance,integration,performance,privileged,unit,umock_acceptance,umock_unit}_tests
+%{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_{client_startup,compositor,glmark2}_performance_test
 %{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_{integration,unit}_tests_mesa*
 %{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_stress
-%{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_test_reload_protobuf
+%{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_test_{client_impolite_shutdown,reload_protobuf}
+%{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_unit_tests_{eglstream-kms,nested}
 %{__rm} -r $RPM_BUILD_ROOT%{_datadir}/mir-test-data
 
 %clean
@@ -150,27 +153,31 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/mirbacklight
 %attr(755,root,root) %{_bindir}/mirin
 %attr(755,root,root) %{_bindir}/mirout
-%attr(755,root,root) %{_bindir}/mirping
+%attr(755,root,root) %{_bindir}/mirrun
 %attr(756,root,root) %{_bindir}/mirscreencast
+%attr(755,root,root) %{_bindir}/mirvanity
 %attr(755,root,root) %{_libdir}/libmirclient.so.9
 %attr(755,root,root) %{_libdir}/libmirclient-debug-extension.so.1
-%attr(755,root,root) %{_libdir}/libmircommon.so.5
+%attr(755,root,root) %{_libdir}/libmircommon.so.7
 %attr(755,root,root) %{_libdir}/libmircookie.so.2
-%attr(755,root,root) %{_libdir}/libmirplatform.so.11
+%attr(755,root,root) %{_libdir}/libmircore.so.1
+%attr(755,root,root) %{_libdir}/libmirplatform.so.15
 %attr(755,root,root) %{_libdir}/libmirprotobuf.so.3
-%attr(755,root,root) %{_libdir}/libmirserver.so.38
+%attr(755,root,root) %{_libdir}/libmirserver.so.43
 %attr(755,root,root) %{_libdir}/libmir_demo_server_loadable.so
 %dir %{_libdir}/mir
 %dir %{_libdir}/mir/client-platform
 %attr(755,root,root) %{_libdir}/mir/client-platform/dummy.so
+%attr(755,root,root) %{_libdir}/mir/client-platform/eglstream.so.5
 %attr(755,root,root) %{_libdir}/mir/client-platform/mesa.so.5
 %dir %{_libdir}/mir/server-platform
 %attr(755,root,root) %{_libdir}/mir/server-platform/graphics-dummy.so
-%attr(755,root,root) %{_libdir}/mir/server-platform/graphics-mesa-kms.so.8
+%attr(755,root,root) %{_libdir}/mir/server-platform/graphics-eglstream-kms.so.12
+%attr(755,root,root) %{_libdir}/mir/server-platform/graphics-mesa-kms.so.12
 %attr(755,root,root) %{_libdir}/mir/server-platform/graphics-throw.so
-%attr(755,root,root) %{_libdir}/mir/server-platform/input-evdev.so.5
+%attr(755,root,root) %{_libdir}/mir/server-platform/input-evdev.so.6
 %attr(755,root,root) %{_libdir}/mir/server-platform/input-stub.so
-%attr(755,root,root) %{_libdir}/mir/server-platform/server-mesa-x11.so.8
+%attr(755,root,root) %{_libdir}/mir/server-platform/server-mesa-x11.so.12
 %dir %{_libdir}/mir/tools
 %attr(755,root,root) %{_libdir}/mir/tools/libmirclientlttng.so
 %attr(755,root,root) %{_libdir}/mir/tools/libmirserverlttng.so
@@ -181,12 +188,14 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libmirclient-debug-extension.so
 %attr(755,root,root) %{_libdir}/libmircommon.so
 %attr(755,root,root) %{_libdir}/libmircookie.so
+%attr(755,root,root) %{_libdir}/libmircore.so
 %attr(755,root,root) %{_libdir}/libmirplatform.so
 %attr(755,root,root) %{_libdir}/libmirprotobuf.so
 %attr(755,root,root) %{_libdir}/libmirserver.so
 %{_includedir}/mirclient
 %{_includedir}/mircommon
 %{_includedir}/mircookie
+%{_includedir}/mircore
 %{_includedir}/mirplatform
 %{_includedir}/mirrenderer
 %{_includedir}/mirserver
@@ -195,7 +204,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_pkgconfigdir}/mirclient.pc
 %{_pkgconfigdir}/mirclient-debug-extension.pc
 %{_pkgconfigdir}/mircookie.pc
+%{_pkgconfigdir}/mircore.pc
 %{_pkgconfigdir}/mirplatform.pc
+%{_pkgconfigdir}/mirrenderer.pc
 %{_pkgconfigdir}/mirserver.pc
 
 %files test-devel

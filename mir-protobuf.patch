@@ -1,0 +1,27 @@
+Compatibility with protobuf 3.3.0
+--- mir-0.26.2/src/protobuf/symbols.map.orig	2017-03-27 04:18:32.000000000 +0200
++++ mir-0.26.2/src/protobuf/symbols.map	2017-05-28 17:50:36.954006085 +0200
+@@ -852,6 +852,23 @@
+     mir::protobuf::wire::Result::SerializeWithCachedSizes*;
+     mir::protobuf::wire::Result::Swap*;
+     mir::protobuf::wire::static_descriptor_initializer_mir_5fprotobuf_5fwire_2eproto_*;
++    mir::protobuf::_Buffer_default_instance_;
++    mir::protobuf::_BufferRequest_default_instance_;
++    mir::protobuf::_BufferStream_default_instance_;
++    mir::protobuf::_BufferStreamId_default_instance_;
++    mir::protobuf::_Cookie_default_instance_;
++    mir::protobuf::_DisplayConfiguration_default_instance_;
++    mir::protobuf::_LifecycleEvent_default_instance_;
++    mir::protobuf::_ModuleProperties_default_instance_;
++    mir::protobuf::_PersistentSurfaceId_default_instance_;
++    mir::protobuf::_PingEvent_default_instance_;
++    mir::protobuf::_Platform_default_instance_;
++    mir::protobuf::_Rectangle_default_instance_;
++    mir::protobuf::_ScreencastId_default_instance_;
++    mir::protobuf::_StructuredError_default_instance_;
++    mir::protobuf::_SurfaceAspectRatio_default_instance_;
++    mir::protobuf::_SurfaceId_default_instance_;
++    mir::protobuf::_SurfaceSpecification_default_instance_;
+     non-virtual?thunk?to?mir::protobuf::BufferAllocation::?BufferAllocation*;
+     non-virtual?thunk?to?mir::protobuf::Buffer::?Buffer*;
+     non-virtual?thunk?to?mir::protobuf::BufferRelease::?BufferRelease*;
