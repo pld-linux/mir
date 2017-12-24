@@ -1,0 +1,10 @@
+--- mir-0.29.0/src/server/CMakeLists.txt.orig	2017-12-12 14:02:22.000000000 +0100
++++ mir-0.29.0/src/server/CMakeLists.txt	2017-12-23 21:24:50.077113522 +0100
+@@ -122,7 +122,6 @@
+   ${GLIB_LDFLAGS} ${GLIB_LIBRARIES}
+   ${UUID_LDFLAGS} ${UUID_LIBRARIES}
+   ${WAYLAND_SERVER_LDFLAGS} ${WAYLAND_SERVER_LIBRARIES}
+-  atomic
+ )
+ 
+ target_include_directories(mirshell
