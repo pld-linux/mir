@@ -1,0 +1,22 @@
+--- mir-0.29.0/src/platforms/mesa/server/kms/bypass.h.orig	2017-12-12 14:02:22.000000000 +0100
++++ mir-0.29.0/src/platforms/mesa/server/kms/bypass.h	2018-10-14 08:27:57.821585391 +0200
+@@ -36,7 +36,7 @@
+ private:
+     geometry::Rectangle const view_area;
+     bool bypass_is_feasible;
+-    glm::mat4 const identity;
++    glm::mat4 const identity{};
+ };
+ 
+ } // namespace mesa
+--- mir-0.29.0/src/server/graphics/nested/display_buffer.h.orig	2017-12-12 14:02:22.000000000 +0100
++++ mir-0.29.0/src/server/graphics/nested/display_buffer.h	2018-10-14 09:43:46.708200116 +0200
+@@ -88,7 +88,7 @@
+         stream,
+         chain
+     } content;
+-    glm::mat4 const identity;
++    glm::mat4 const identity{};
+ 
+     std::mutex mutex;
+     typedef std::tuple<MirBuffer*, MirPresentationChain*> SubmissionInfo;

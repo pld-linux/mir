@@ -5,18 +5,19 @@
 Summary:	Mir display server and libraries
 Summary(pl.UTF-8):	Serwer wyświetlania Mir oraz biblioteki
 Name:		mir
-Version:	0.29.0
+Version:	1.0.0
 Release:	0.1
 License:	LGPL v3 (libraries), GPL v3 (server and examples)
 Group:		Libraries
-#Source0Download: https://launchpad.net/mir/+download
-Source0:	https://launchpad.net/mir/0.29/%{version}/+download/%{name}-%{version}.tar.xz
-# Source0-md5:	65607ccfa6505e3c44c069fb2dda7325
+#Source0Download: https://github.com/MirServer/mir/releases
+Source0:	https://github.com/MirServer/mir/releases/download/v%{version}/%{name}-%{version}.tar.xz
+# Source0-md5:	7199654f2bed5e29da92a65400dea78d
 Patch0:		%{name}-protobuf.patch
 Patch1:		%{name}-gflags.patch
 Patch2:		%{name}-dirs.patch
 Patch3:		%{name}-atomic.patch
-URL:		https://launchpad.net/mir
+Patch4:		%{name}-c++.patch
+URL:		https://mir-server.io/
 BuildRequires:	EGL-devel
 BuildRequires:	GLM
 BuildRequires:	Mesa-libgbm-devel >= 11.0
@@ -110,14 +111,15 @@ Dokumentacja API Mira.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-#patch3 -p1
-#patch4 -p1
+%patch4 -p1
 
 %{__sed} -i -e 's/-Werror //' CMakeLists.txt
 
 %build
 install -d build
 cd build
+# override unsuccessful "detection" by "rpm -q libgtest-dev"
+export GTEST_VERSION="$(gtest-config --version)"
 %cmake .. \
 	-DBUILD_DOXYGEN=ON \
 	-DMIR_PLATFORM="mesa-kms;mesa-x11;eglstream-kms%{?with_android:;android}" \
@@ -132,12 +134,8 @@ rm -rf $RPM_BUILD_ROOT
 
 # tests
 %{__rm} $RPM_BUILD_ROOT%{_bindir}/mir-smoke-test-runner
-%{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_{acceptance,integration,performance,privileged,unit,umock_acceptance,umock_unit,wlcs}_tests
-%{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_{integration,unit}_tests_mesa*
+%{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_performance_tests
 %{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_stress
-%{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_test_{client_impolite_shutdown,reload_protobuf}
-%{__rm} $RPM_BUILD_ROOT%{_bindir}/mir_unit_tests_{eglstream-kms,nested}
-%{__rm} -r $RPM_BUILD_ROOT%{_datadir}/mir-test-data
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -161,7 +159,7 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/mirout
 %attr(755,root,root) %{_bindir}/mirrun
 %attr(756,root,root) %{_bindir}/mirscreencast
-%attr(755,root,root) %{_libdir}/libmiral.so.2
+%attr(755,root,root) %{_libdir}/libmiral.so.3
 %attr(755,root,root) %{_libdir}/libmirclient.so.9
 %attr(755,root,root) %{_libdir}/libmirclient-debug-extension.so.1
 %attr(755,root,root) %{_libdir}/libmircommon.so.7
@@ -169,21 +167,17 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_libdir}/libmircore.so.1
 %attr(755,root,root) %{_libdir}/libmirplatform.so.16
 %attr(755,root,root) %{_libdir}/libmirprotobuf.so.3
-%attr(755,root,root) %{_libdir}/libmirserver.so.46
+%attr(755,root,root) %{_libdir}/libmirserver.so.47
 %attr(755,root,root) %{_libdir}/libmir_demo_server_loadable.so
 %dir %{_libdir}/mir
 %dir %{_libdir}/mir/client-platform
-%attr(755,root,root) %{_libdir}/mir/client-platform/dummy.so
 %attr(755,root,root) %{_libdir}/mir/client-platform/eglstream.so.5
 %attr(755,root,root) %{_libdir}/mir/client-platform/mesa.so.5
 %dir %{_libdir}/mir/server-platform
-%attr(755,root,root) %{_libdir}/mir/server-platform/graphics-dummy.so
-%attr(755,root,root) %{_libdir}/mir/server-platform/graphics-eglstream-kms.so.13
-%attr(755,root,root) %{_libdir}/mir/server-platform/graphics-mesa-kms.so.13
-%attr(755,root,root) %{_libdir}/mir/server-platform/graphics-throw.so
+%attr(755,root,root) %{_libdir}/mir/server-platform/graphics-eglstream-kms.so.15
+%attr(755,root,root) %{_libdir}/mir/server-platform/graphics-mesa-kms.so.15
 %attr(755,root,root) %{_libdir}/mir/server-platform/input-evdev.so.7
-%attr(755,root,root) %{_libdir}/mir/server-platform/input-stub.so
-%attr(755,root,root) %{_libdir}/mir/server-platform/server-mesa-x11.so.13
+%attr(755,root,root) %{_libdir}/mir/server-platform/server-mesa-x11.so.15
 %dir %{_libdir}/mir/tools
 %attr(755,root,root) %{_libdir}/mir/tools/libmirclientlttng.so
 %attr(755,root,root) %{_libdir}/mir/tools/libmirserverlttng.so
@@ -227,7 +221,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libmir-test-assist.a
 %{_includedir}/mirtest
 %{py3_sitedir}/mir_perf_framework
-%{py3_sitedir}/mir_perf_framework-0.1-py*.egg-info
+%{py3_sitedir}/mir_perf_framework-%{version}-py*.egg-info
 %{_pkgconfigdir}/mirtest.pc
 %{_datadir}/mir-perf-framework
 

@@ -1,5 +1,5 @@
---- mir-0.11.0/examples/glog_logger.cpp.orig	2015-02-11 04:58:37.000000000 +0100
-+++ mir-0.11.0/examples/glog_logger.cpp	2015-02-26 19:44:18.608720129 +0100
+--- mir-1.0.0/examples/mir_demo_server/glog_logger.cpp.orig	2015-02-11 04:58:37.000000000 +0100
++++ mir-1.0.0/examples/mir_demo_server/glog_logger.cpp	2015-02-26 19:44:18.608720129 +0100
 @@ -49,7 +49,7 @@
  {
      ~google_gflag_guard_t()
