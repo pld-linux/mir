@@ -37,6 +37,7 @@ BuildRequires:	libinput-devel >= 1.2
 # -std=c++14
 BuildRequires:	libstdc++-devel >= 6:4.9
 BuildRequires:	libuuid-devel
+BuildRequires:	libxcb-devel
 BuildRequires:	lttng-ust-devel
 BuildRequires:	pkgconfig
 BuildRequires:	protobuf-devel >= 2.4.1
@@ -45,9 +46,11 @@ BuildRequires:	sed >= 4.0
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	udev-devel
 BuildRequires:	umockdev-devel >= 0.6
+# wayland-client, wayland-server
+BuildRequires:	wayland-devel
+BuildRequires:	xorg-lib-libXcursor-devel
 BuildRequires:	xorg-lib-libxkbcommon-devel
 BuildRequires:	xz
-# TODO? astyle pdebuild android-ndk android-sdk vera++
 Requires:	Mesa-libgbm >= 11.0
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
