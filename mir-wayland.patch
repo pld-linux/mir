@@ -1,0 +1,52 @@
+--- mir-1.8.2/examples/example-server-lib/wayland_helpers.cpp.orig	2021-12-01 11:13:18.000000000 +0100
++++ mir-1.8.2/examples/example-server-lib/wayland_helpers.cpp	2023-03-04 13:08:10.490784224 +0100
+@@ -137,6 +137,14 @@ void output_scale(void* data, struct wl_
+     output->scale = factor;
+ }
+ 
++void output_name(void* /*data*/, struct wl_output* /*wl_output*/, const char* /*name*/)
++{
++}
++
++void output_description(void* /*data*/, struct wl_output* /*wl_output*/, const char* /*description*/)
++{
++}
++
+ }
+ 
+ wl_output_listener const Output::output_listener = {
+@@ -144,6 +152,8 @@ wl_output_listener const Output::output_
+     &output_mode,
+     &Output::output_done,
+     &output_scale,
++    &output_name,
++    &output_description,
+ };
+ 
+ Output::Output(
+--- mir-1.8.2/examples/miral-shell/spinner/miregl.cpp.orig	2021-12-01 11:13:18.000000000 +0100
++++ mir-1.8.2/examples/miral-shell/spinner/miregl.cpp	2023-03-04 13:11:02.906516834 +0100
+@@ -70,6 +70,14 @@ static void output_scale(void* /*data*/,
+ {
+ }
+ 
++void output_name(void* /*data*/, struct wl_output* /*wl_output*/, const char* /*name*/)
++{
++}
++
++void output_description(void* /*data*/, struct wl_output* /*wl_output*/, const char* /*description*/)
++{
++}
++
+ class MirEglApp
+ {
+ public:
+@@ -287,6 +295,8 @@ MirEglApp::MirEglApp(struct wl_display*
+         &output_mode,
+         &output_done,
+         &output_scale,
++        &output_name,
++        &output_description,
+     };
+ 
+     for (auto const output : outputs)

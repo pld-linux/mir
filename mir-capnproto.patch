@@ -1,0 +1,14 @@
+--- mir-1.8.2/src/include/common/mir/events/event.h.orig	2021-12-01 11:13:18.000000000 +0100
++++ mir-1.8.2/src/include/common/mir/events/event.h	2023-03-04 15:06:11.572422711 +0100
+@@ -23,6 +23,11 @@
+ #include "mir/events/event_builders.h"
+ #include "mir_event.capnp.h"
+ 
++// <X11/X.h> vs <kj/one-of.h> conflict
++#ifdef Success
++#undef Success
++#endif
++
+ #include <capnp/message.h>
+ 
+ #include <cstring>

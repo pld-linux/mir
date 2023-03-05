@@ -1,0 +1,21 @@
+--- mir-1.8.2/tests/unit-tests/graphics/test_display_configuration.cpp.orig	2021-12-01 11:13:18.000000000 +0100
++++ mir-1.8.2/tests/unit-tests/graphics/test_display_configuration.cpp	2023-03-04 12:58:39.250545565 +0100
+@@ -19,6 +19,7 @@
+ #include "mir/graphics/display_configuration.h"
+ 
+ #include <gtest/gtest.h>
++#include <gmock/gmock.h>
+ 
+ namespace mg = mir::graphics;
+ namespace geom = mir::geometry;
+--- mir-1.8.2/tests/include/mir/test/input_config_matchers.h.orig	2021-12-01 11:13:18.000000000 +0100
++++ mir-1.8.2/tests/include/mir/test/input_config_matchers.h	2023-03-04 13:56:37.295036714 +0100
+@@ -116,7 +116,7 @@ private:
+ 
+     MatcherVec matchers_;
+ 
+-    GTEST_DISALLOW_ASSIGN_(InputConfigElementsMatcher);
++    InputConfigElementsMatcher& operator=(const InputConfigElementsMatcher&) = delete;
+ };
+ 
+ // Multiple specializations because gmock does not decay the parameter type to the

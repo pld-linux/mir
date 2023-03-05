@@ -1,10 +1,10 @@
---- mir-1.0.0/src/server/CMakeLists.txt.orig	2018-10-15 18:24:02.773523816 +0200
-+++ mir-1.0.0/src/server/CMakeLists.txt	2018-10-15 18:39:37.173513149 +0200
-@@ -137,7 +137,6 @@
-   ${XCB_XFIXES_LDFLAGS} ${XCB_XFIXES_LIBRARIES}
-   ${XCB_RENDER_LDFLAGS} ${XCB_RENDER_LIBRARIES}
+--- mir-1.8.2/src/server/CMakeLists.txt.orig	2023-03-03 16:04:54.548072759 +0100
++++ mir-1.8.2/src/server/CMakeLists.txt	2023-03-03 16:06:12.297651553 +0100
+@@ -146,7 +146,6 @@ target_link_libraries(mirserver LINK_PUB
    ${X11_XCURSOR_LDFLAGS} ${X11_XCURSOR_LIBRARIES}
+   ${LTTNG_UST_LDFLAGS} ${LTTNG_UST_LIBRARIES}
+   ${FREETYPE_LDFLAGS} ${FREETYPE_LIBRARIES}
 -  atomic
  )
  
- target_include_directories(mirshell
+ target_include_directories(mirshelldecoration
