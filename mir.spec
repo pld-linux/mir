@@ -17,7 +17,7 @@ Patch6:		%{name}-wayland.patch
 Patch7:		%{name}-capnproto.patch
 URL:		https://mir-server.io/
 BuildRequires:	EGL-devel
-BuildRequires:	GLM
+BuildRequires:	GLM-devel
 BuildRequires:	Mesa-libgbm-devel >= 11.0
 BuildRequires:	OpenGLESv2-devel
 BuildRequires:	boost-devel >= 1.48.0
